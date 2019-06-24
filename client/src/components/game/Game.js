@@ -9,29 +9,46 @@ function Game(props) {
   const { location } = props;
   const { username } = location.state;
 
+  const [score, setScore] = useState({
+    X: 0,
+    O: 0,
+  });
+
+  const initialGameState = {
+    board: [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
+    isDraw: false,
+    winner: '',
+  };
+
   const [gameState, setGameState] = useState({
     board: [
       ['', 'O', ''],
       ['O', 'X', ''],
-      ['', 'X', 'O'],
+      ['', 'X', ''],
     ],
     isDraw: false,
     winner: '',
   });
 
   useEffect(() => {
-    if (gameState.winner || gameState.isDraw) {
-      const msg = gameState.winner ? `${gameState.winner} Wins` : 'Its a Draw';
-      window.alert(msg);
-      setGameState({
-        board: [
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-        ],
-        isDraw: false,
-        winner: '',
-      });
+    if (gameState.winner) {
+      window.alert(`${gameState.winner} Wins!`);
+      const updatedScore = cloneDeep(score);
+      updatedScore[gameState.winner] += 100;
+      setScore(updatedScore);
+      setGameState(initialGameState);
+    }
+    if (gameState.isDraw) {
+      window.alert('It`s a Draw');
+      const updatedScore = cloneDeep(score);
+      updatedScore.X += 10;
+      updatedScore.O += 10;
+      setScore(updatedScore);
+      setGameState(initialGameState);
     }
   }, [gameState]);
 
@@ -53,7 +70,7 @@ function Game(props) {
     <section>
       <h4>{username} (X) VS AI (O)</h4>
       <div>
-        Score: 0 - 0
+        Score: {score.X} - {score.O}
       </div>
       <table>
         <tbody>
