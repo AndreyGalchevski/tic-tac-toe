@@ -25,6 +25,7 @@
               "extensions": [".js", ".jsx"]
             }
           ],
-        "no-restricted-syntax": "off"
+        "no-restricted-syntax": "off",
+        "react/jsx-one-expression-per-line": "off"
     }
 }

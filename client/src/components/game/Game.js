@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import ReactRouterPropTypes from 'react-router-prop-types';
 import { cloneDeep } from 'lodash';
 
 import './Game.css';
 import makeHttpRequest from '../../API';
 
-function Game() {
+function Game(props) {
+  const { location } = props;
+  const { username } = location.state;
+
   const [gameState, setGameState] = useState({
     board: [
       ['', 'O', ''],
@@ -47,6 +51,10 @@ function Game() {
 
   return (
     <section>
+      <h4>{username} (X) VS AI (O)</h4>
+      <div>
+        Score: 0 - 0
+      </div>
       <table>
         <tbody>
           {gameState.board.map((row, rowIndex) => (
@@ -63,5 +71,9 @@ function Game() {
     </section>
   );
 }
+
+Game.propTypes = {
+  location: ReactRouterPropTypes.location.isRequired,
+};
 
 export default Game;
