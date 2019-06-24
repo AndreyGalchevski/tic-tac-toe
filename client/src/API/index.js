@@ -1,7 +1,11 @@
 
 import axios from 'axios';
 
-const baseURL = 'http://localhost:8080';
+let baseURL = 'http://localhost:8080';
+
+if (process.env.NODE_ENV === 'production') {
+  baseURL = 'https://xsie-osies.herokuapp.com';
+}
 
 const Api = axios.create({ baseURL });
 
