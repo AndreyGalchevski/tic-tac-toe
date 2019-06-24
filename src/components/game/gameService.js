@@ -87,11 +87,9 @@ const makeAIMove = async (gameState) => {
       for (const [colIndex, col] of row.entries()) {
         if (col === '') {
           updatedGameState.board[rowIndex][colIndex] = 'O';
-          const lineCreated = assertLine(updatedGameState.board, rowIndex, colIndex, 'O');
-          if (lineCreated) {
+          const oHaveWon = assertLine(updatedGameState.board, rowIndex, colIndex, 'O');
+          if (oHaveWon) {
             updatedGameState.winner = 'O';
-          } else {
-            updatedGameState.isDraw = assertDraw(updatedGameState.board);
           }
           return updatedGameState;
         }
@@ -104,13 +102,16 @@ const makeAIMove = async (gameState) => {
 };
 
 const makeMove = async ({ gameState, selectedRow, selectedCol }) => {
-  let updatedGameState;
+  let updatedGameState = _.cloneDeep(gameState);
 
   try {
-    const havePlayerWon = assertLine(gameState.board, selectedRow, selectedCol, 'X');
-    if (havePlayerWon) {
-      updatedGameState = _.cloneDeep(gameState);
+    const xHaveWon = assertLine(gameState.board, selectedRow, selectedCol, 'X');
+    if (xHaveWon) {
       updatedGameState.winner = 'X';
+      return updatedGameState;
+    }
+    updatedGameState.isDraw = assertDraw(updatedGameState.board);
+    if (updatedGameState.isDraw) {
       return updatedGameState;
     }
     updatedGameState = await makeAIMove(gameState);
