@@ -11,7 +11,7 @@ const assertLineInARow = (board, rowIndex, symbol) => {
   return false;
 };
 
-const assertLineInACol = (board, rowIndex, colIndex, symbol) => {
+const assertLineInACol = (board, colIndex, symbol) => {
   const sameSymbolsInACol = [];
   board.forEach((row) => {
     if (row[colIndex] === symbol) {
@@ -59,10 +59,22 @@ const assertLineInRightDiagonal = (board, rowIndex, colIndex, symbol) => {
 
 const assertLine = (board, rowIndex, colIndex, symbol) => {
   const lineInARow = assertLineInARow(board, rowIndex, symbol);
-  const lineInACol = assertLineInACol(board, rowIndex, colIndex, symbol);
+  const lineInACol = assertLineInACol(board, colIndex, symbol);
   const lineInLeftDiagonal = assertLineInLeftDiagonal(board, rowIndex, colIndex, symbol);
   const lineInRightDiagonal = assertLineInRightDiagonal(board, rowIndex, colIndex, symbol);
   return lineInARow || lineInACol || lineInLeftDiagonal || lineInRightDiagonal;
+};
+
+const assertDraw = (board) => {
+  let isDraw = true;
+  board.forEach((row) => {
+    row.forEach((col) => {
+      if (col === '') {
+        isDraw = false;
+      }
+    });
+  });
+  return isDraw;
 };
 
 const makeAIMove = async (gameState) => {
@@ -78,6 +90,8 @@ const makeAIMove = async (gameState) => {
           const lineCreated = assertLine(updatedGameState.board, rowIndex, colIndex, 'O');
           if (lineCreated) {
             updatedGameState.winner = 'O';
+          } else {
+            updatedGameState.isDraw = assertDraw(updatedGameState.board);
           }
           return updatedGameState;
         }

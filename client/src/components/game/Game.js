@@ -16,8 +16,9 @@ function Game() {
   });
 
   useEffect(() => {
-    if (gameState.winner) {
-      window.alert(`${gameState.winner} Wins`);
+    if (gameState.winner || gameState.isDraw) {
+      const msg = gameState.winner ? `${gameState.winner} Wins` : 'Its a Draw';
+      window.alert(msg);
       setGameState({
         board: [
           ['', '', ''],
@@ -51,7 +52,7 @@ function Game() {
           {gameState.board.map((row, rowIndex) => (
             <tr>
               {row.map((col, colIndex) => (
-                <td onClick={() => handleCellClick(rowIndex, colIndex)}>
+                <td onClick={col ? null : () => handleCellClick(rowIndex, colIndex)}>
                   {col}
                 </td>
               ))}
