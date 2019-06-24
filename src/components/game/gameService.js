@@ -1,14 +1,17 @@
 const _ = require('lodash');
 const { waitFor } = require('../../utils/general');
 
-const assetLine = (board, rowIndex, colIndex, symbol) => {
-  const DIMENSIONS = 3;
+const DIMENSIONS = 3;
 
+const assertLineInARow = (board, rowIndex, symbol) => {
   const sameSymbolsInARow = board[rowIndex].filter(cell => cell === symbol);
   if (sameSymbolsInARow.length === DIMENSIONS) {
     return true;
   }
+  return false;
+};
 
+const assertLineInACol = (board, rowIndex, colIndex, symbol) => {
   const sameSymbolsInACol = [];
   board.forEach((row) => {
     if (row[colIndex] === symbol) {
@@ -18,7 +21,10 @@ const assetLine = (board, rowIndex, colIndex, symbol) => {
   if (sameSymbolsInACol.length === DIMENSIONS) {
     return true;
   }
+  return false;
+};
 
+const assertLineInLeftDiagonal = (board, rowIndex, colIndex, symbol) => {
   if (rowIndex === colIndex) {
     const sameSymbolsInLeftDiagonal = [];
     board.forEach((row, i) => {
@@ -33,7 +39,10 @@ const assetLine = (board, rowIndex, colIndex, symbol) => {
       return true;
     }
   }
+  return false;
+};
 
+const assertLineInRightDiagonal = (board, rowIndex, colIndex, symbol) => {
   if (
     (rowIndex === 0 && colIndex === DIMENSIONS - 1)
     || (rowIndex === DIMENSIONS - 1 && colIndex === 0)
@@ -45,13 +54,15 @@ const assetLine = (board, rowIndex, colIndex, symbol) => {
       return true;
     }
   }
-
   return false;
 };
 
-const checkIfPlayerWon = (board, selectedRow, selectedCol) => {
-  const lineCreated = assetLine(board, selectedRow, selectedCol, 'X');
-  return lineCreated;
+const assertLine = (board, rowIndex, colIndex, symbol) => {
+  const lineInARow = assertLineInARow(board, rowIndex, symbol);
+  const lineInACol = assertLineInACol(board, rowIndex, colIndex, symbol);
+  const lineInLeftDiagonal = assertLineInLeftDiagonal(board, rowIndex, colIndex, symbol);
+  const lineInRightDiagonal = assertLineInRightDiagonal(board, rowIndex, colIndex, symbol);
+  return lineInARow || lineInACol || lineInLeftDiagonal || lineInRightDiagonal;
 };
 
 const makeAIMove = async (gameState) => {
@@ -64,7 +75,7 @@ const makeAIMove = async (gameState) => {
       for (const [colIndex, col] of row.entries()) {
         if (col === '') {
           updatedGameState.board[rowIndex][colIndex] = 'O';
-          const lineCreated = assetLine(updatedGameState.board, rowIndex, colIndex, 'O');
+          const lineCreated = assertLine(updatedGameState.board, rowIndex, colIndex, 'O');
           if (lineCreated) {
             updatedGameState.winner = 'O';
           }
@@ -82,7 +93,7 @@ const makeMove = async ({ gameState, selectedRow, selectedCol }) => {
   let updatedGameState;
 
   try {
-    const havePlayerWon = checkIfPlayerWon(gameState.board, selectedRow, selectedCol);
+    const havePlayerWon = assertLine(gameState.board, selectedRow, selectedCol, 'X');
     if (havePlayerWon) {
       updatedGameState = _.cloneDeep(gameState);
       updatedGameState.winner = 'X';
